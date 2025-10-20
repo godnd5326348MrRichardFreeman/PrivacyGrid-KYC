@@ -1,7 +1,7 @@
 {
-  "name": "cloaked-collectible-bazaar",
+  "name": "privacygrid-kyc",
   "version": "1.0.0",
-  "description": "Privacy-preserving NFT auction marketplace with FHE technology",
+  "description": "Privacy-preserving identity verification powered by Zama FHE technology. Educational demo showcasing fully homomorphic encryption for KYC processes.",
   "main": "index.js",
   "scripts": {
     "compile": "hardhat compile",
@@ -10,15 +10,17 @@
     "test": "hardhat test",
     "node": "hardhat node",
     "clean": "hardhat clean",
-    "verify": "hardhat verify --network sepolia"
+    "verify": "hardhat verify --network sepolia",
+    "dev": "cd frontend && npm run dev"
   },
   "keywords": [
     "fhe",
     "zama",
-    "nft",
-    "auction",
+    "kyc",
+    "identity",
     "privacy",
-    "blockchain"
+    "blockchain",
+    "homomorphic-encryption"
   ],
   "author": "",
   "license": "MIT",
