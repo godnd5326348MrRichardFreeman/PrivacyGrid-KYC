@@ -1,5 +1,4 @@
-import { Wallet, Lock, Shield, CheckCircle, Play } from "lucide-react";
-import { useState } from "react";
+import { Wallet, Lock, Shield, CheckCircle } from "lucide-react";
 
 const steps = [
   {
@@ -29,8 +28,6 @@ const steps = [
 ];
 
 export const HowItWorks = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-
   return (
     <section className="py-24 px-6 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto max-w-7xl">
@@ -46,23 +43,15 @@ export const HowItWorks = () => {
         {/* Video Demo Section */}
         <div className="mb-20 max-w-4xl mx-auto">
           <div className="relative rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border shadow-2xl">
-            <div className="aspect-video relative">
-              {!isPlaying ? (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm cursor-pointer group" onClick={() => setIsPlaying(true)}>
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                    <Play className="w-10 h-10 text-white ml-1" fill="white" />
-                  </div>
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-2xl font-bold text-white mb-2">Watch Demo Video</h3>
-                    <p className="text-white/90">See PrivacyGrid KYC in action - complete walkthrough of FHE encryption demo</p>
-                  </div>
-                </div>
-              ) : null}
+            <div className="mb-4 px-6 pt-6">
+              <h3 className="text-2xl font-bold text-foreground mb-2">Demo Walkthrough</h3>
+              <p className="text-muted-foreground">Complete demonstration of PrivacyGrid KYC with FHE encryption in action</p>
+            </div>
+            <div className="aspect-video">
               <video
                 className="w-full h-full"
                 controls
-                autoPlay={isPlaying}
-                poster="/placeholder.svg"
+                preload="metadata"
               >
                 <source src="/demo-video.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
