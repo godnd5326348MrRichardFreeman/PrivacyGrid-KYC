@@ -1,33 +1,36 @@
-import { Wallet, FileCheck, Shield, CheckCircle } from "lucide-react";
+import { Wallet, Lock, Shield, CheckCircle, Play } from "lucide-react";
+import { useState } from "react";
 
 const steps = [
   {
     icon: Wallet,
     title: "Connect Wallet",
-    description: "Link your Web3 wallet securely using RainbowKit",
+    description: "Connect your Web3 wallet using RainbowKit to get started with the demo",
     step: "01"
   },
   {
-    icon: FileCheck,
-    title: "Submit Documents",
-    description: "Upload your identity documents which are instantly encrypted",
+    icon: Lock,
+    title: "Enter Sample Data",
+    description: "Fill in demonstration data (name, country, birth year) - no real verification required",
     step: "02"
   },
   {
     icon: Shield,
-    title: "FHE Verification",
-    description: "Documents verified under encryption without exposing data",
+    title: "FHE Encryption",
+    description: "Data is encrypted using Zama's FHE technology before being stored on-chain",
     step: "03"
   },
   {
     icon: CheckCircle,
-    title: "Get Verified",
-    description: "Receive your on-chain credential and start using dApps",
+    title: "On-Chain Storage",
+    description: "Encrypted data is stored on Sepolia testnet, demonstrating privacy-preserving capabilities",
     step: "04"
   }
 ];
 
 export const HowItWorks = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
   return (
     <section className="py-24 px-6 bg-gradient-to-b from-background to-muted/20">
       <div className="container mx-auto max-w-7xl">
@@ -36,14 +39,43 @@ export const HowItWorks = () => {
             How It <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Works</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Simple, secure, and lightning fast verification process
+            See how FHE encryption works in our demonstration platform
           </p>
         </div>
 
+        {/* Video Demo Section */}
+        <div className="mb-20 max-w-4xl mx-auto">
+          <div className="relative rounded-2xl overflow-hidden bg-card/50 backdrop-blur-sm border border-border shadow-2xl">
+            <div className="aspect-video relative">
+              {!isPlaying ? (
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm cursor-pointer group" onClick={() => setIsPlaying(true)}>
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Play className="w-10 h-10 text-white ml-1" fill="white" />
+                  </div>
+                  <div className="absolute bottom-6 left-6 right-6">
+                    <h3 className="text-2xl font-bold text-white mb-2">Watch Demo Video</h3>
+                    <p className="text-white/90">See PrivacyGrid KYC in action - complete walkthrough of FHE encryption demo</p>
+                  </div>
+                </div>
+              ) : null}
+              <video
+                className="w-full h-full"
+                controls
+                autoPlay={isPlaying}
+                poster="/placeholder.svg"
+              >
+                <source src="/demo-video.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          </div>
+        </div>
+
+        {/* Steps Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           {/* Connection line for desktop */}
           <div className="hidden lg:block absolute top-24 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-          
+
           {steps.map((step, index) => {
             const Icon = step.icon;
             return (
