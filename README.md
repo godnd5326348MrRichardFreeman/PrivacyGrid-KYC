@@ -2,7 +2,9 @@
 
 > **Privacy-Preserving Identity Verification powered by Zama FHE Technology**
 
-A demonstration platform showcasing Fully Homomorphic Encryption (FHE) for privacy-preserving identity verification processes.
+PrivacyGrid KYC is an innovative blockchain-based identity verification platform that leverages Fully Homomorphic Encryption (FHE) to enable privacy-preserving KYC processes. Built on Zama's fhEVM technology, the platform allows sensitive user data to remain encrypted throughout the entire verification lifecycle - from submission to storage and computation on-chain.
+
+The platform addresses a critical challenge in decentralized identity systems: how to verify user credentials without exposing personal information to validators, smart contracts, or even the blockchain itself. By utilizing FHE, PrivacyGrid KYC enables computations on encrypted data, ensuring that sensitive information such as country codes and birth years never exist in plaintext on-chain.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://privacygrid-kyc.vercel.app)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
