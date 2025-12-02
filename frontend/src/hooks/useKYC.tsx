@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { useAccount } from 'wagmi';
-import { Contract, BrowserProvider } from 'ethers';
+import { useAccount, useWalletClient, usePublicClient } from 'wagmi';
+import { Contract, BrowserProvider, JsonRpcSigner } from 'ethers';
 import { toast } from 'sonner';
 import { CODED_COMPLIANCE_ABI, CONTRACT_ADDRESS } from '@/lib/contractABI';
 import { initializeFHE, encryptKYCData } from '@/lib/fhe';
@@ -23,8 +23,27 @@ const TxToast = ({ message, hash }: { message: string; hash: string }) => (
   </div>
 );
 
+// Helper to get ethers provider from wagmi wallet client
+async function getEthersProvider(walletClient: any): Promise<{ provider: BrowserProvider; signer: JsonRpcSigner }> {
+  // Get the underlying provider from the wallet client
+  const { account, chain, transport } = walletClient;
+
+  // Create a provider from the transport
+  // For EIP-1193 compatible wallets (MetaMask, OKX, etc.)
+  const provider = new BrowserProvider(transport, {
+    chainId: chain.id,
+    name: chain.name,
+  });
+
+  const signer = await provider.getSigner(account.address);
+
+  return { provider, signer };
+}
+
 export const useKYC = () => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
   const [isLoading, setIsLoading] = useState(false);
 
   const submitKYC = useCallback(async (
@@ -33,8 +52,13 @@ export const useKYC = () => {
     countryCode: number,
     birthYear: number
   ) => {
-    if (!address) {
+    if (!address || !isConnected) {
       toast.error('Please connect your wallet first');
+      return;
+    }
+
+    if (!walletClient) {
+      toast.error('Wallet not ready. Please try again.');
       return;
     }
 
@@ -54,9 +78,8 @@ export const useKYC = () => {
         address
       );
 
-      // Get provider and signer
-      const provider = new BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
+      // Get provider and signer from wagmi wallet client
+      const { signer } = await getEthersProvider(walletClient);
 
       // Create contract instance
       const contract = new Contract(CONTRACT_ADDRESS, CODED_COMPLIANCE_ABI, signer);
@@ -113,36 +136,51 @@ export const useKYC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [address]);
+  }, [address, isConnected, walletClient]);
 
   const checkStatus = useCallback(async (userAddress: string) => {
     try {
-      const provider = new BrowserProvider(window.ethereum);
-      const contract = new Contract(CONTRACT_ADDRESS, CODED_COMPLIANCE_ABI, provider);
+      // Use public client for read operations - no wallet needed
+      if (!publicClient) {
+        throw new Error('Public client not available');
+      }
 
-      const [state, timestamp] = await contract.queryRecordState(userAddress);
+      const result = await publicClient.readContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: CODED_COMPLIANCE_ABI,
+        functionName: 'queryRecordState',
+        args: [userAddress as `0x${string}`],
+      }) as [number, bigint];
 
       const states = ['Unverified', 'Approved', 'Declined'];
       return {
-        status: states[state],
-        timestamp: Number(timestamp)
+        status: states[result[0]],
+        timestamp: Number(result[1])
       };
     } catch (error: any) {
       console.error('Status check error:', error);
       throw error;
     }
-  }, []);
+  }, [publicClient]);
 
   const checkExists = useCallback(async (userAddress: string) => {
     try {
-      const provider = new BrowserProvider(window.ethereum);
-      const contract = new Contract(CONTRACT_ADDRESS, CODED_COMPLIANCE_ABI, provider);
+      if (!publicClient) {
+        return false;
+      }
 
-      return await contract.recordExists(userAddress);
+      const exists = await publicClient.readContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: CODED_COMPLIANCE_ABI,
+        functionName: 'recordExists',
+        args: [userAddress as `0x${string}`],
+      });
+
+      return exists as boolean;
     } catch (error) {
       return false;
     }
-  }, []);
+  }, [publicClient]);
 
   return {
     submitKYC,
