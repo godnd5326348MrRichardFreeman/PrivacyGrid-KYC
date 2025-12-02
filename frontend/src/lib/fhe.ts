@@ -179,3 +179,74 @@ export const getFHEStatus = (): {
         instanceReady: fheInstance !== null,
     };
 };
+
+/**
+ * Decrypt an encrypted value using the FHE instance
+ * The user must have permission to decrypt (owner of the encrypted data)
+ * @param ciphertext - The encrypted handle (euint32)
+ * @param userAddress - The user's wallet address
+ * @param provider - Optional ethereum provider
+ */
+export const decryptValue = async (
+    ciphertext: bigint | string,
+    userAddress: Address,
+    provider?: any
+): Promise<number> => {
+    console.log('[FHE] Decrypting value for user:', userAddress);
+    const instance = await getInstance(provider);
+    const contractAddr = getAddress(CONTRACT_ADDRESS);
+    const userAddr = getAddress(userAddress);
+
+    // Convert ciphertext to the right format if needed
+    const ctValue = typeof ciphertext === 'string' ? BigInt(ciphertext) : ciphertext;
+
+    console.log('[FHE] Requesting decryption...');
+
+    // Use the SDK's reencrypt function to get the decrypted value
+    // This requires the user to sign a message to prove ownership
+    const decrypted = await instance.reencrypt(
+        ctValue,
+        contractAddr,
+        userAddr
+    );
+
+    console.log('[FHE] Decryption complete');
+    return Number(decrypted);
+};
+
+/**
+ * Request re-encryption for viewing encrypted data
+ * Returns decrypted values for the given handles
+ * @param ciphertextHandles - Array of encrypted handles to decrypt
+ * @param userAddress - The user's wallet address
+ * @param provider - Optional ethereum provider
+ */
+export const requestReencryption = async (
+    ciphertextHandles: (bigint | string)[],
+    userAddress: Address,
+    provider?: any
+): Promise<number[]> => {
+    console.log('[FHE] Requesting re-encryption for', ciphertextHandles.length, 'values');
+    const instance = await getInstance(provider);
+    const contractAddr = getAddress(CONTRACT_ADDRESS);
+    const userAddr = getAddress(userAddress);
+
+    const decryptedValues: number[] = [];
+
+    for (const handle of ciphertextHandles) {
+        const ctValue = typeof handle === 'string' ? BigInt(handle) : handle;
+        try {
+            const decrypted = await instance.reencrypt(
+                ctValue,
+                contractAddr,
+                userAddr
+            );
+            decryptedValues.push(Number(decrypted));
+        } catch (error) {
+            console.error('[FHE] Failed to decrypt handle:', handle, error);
+            decryptedValues.push(0); // Push 0 for failed decryptions
+        }
+    }
+
+    return decryptedValues;
+};
