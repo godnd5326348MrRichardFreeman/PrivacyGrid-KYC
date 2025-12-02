@@ -62,6 +62,31 @@ export const CODED_COMPLIANCE_ABI = [
     inputs: [
       { internalType: "address", name: "participant", type: "address" }
     ],
+    name: "retrieveDocumentRef",
+    outputs: [
+      { internalType: "string", name: "", type: "string" }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "participant", type: "address" }
+    ],
+    name: "retrieveFullRecord",
+    outputs: [
+      { internalType: "string", name: "documentRef", type: "string" },
+      { internalType: "string", name: "name", type: "string" },
+      { internalType: "uint256", name: "country", type: "uint256" },
+      { internalType: "uint256", name: "birthYear", type: "uint256" }
+    ],
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    inputs: [
+      { internalType: "address", name: "participant", type: "address" }
+    ],
     name: "checkApprovalStatus",
     outputs: [
       { internalType: "bool", name: "", type: "bool" }
