@@ -44,7 +44,16 @@ const COUNTRY_CODES: Record<number, string> = {
   643: 'Russia',
   356: 'India',
   484: 'Mexico',
-  // Add more as needed
+  528: 'Netherlands',
+  756: 'Switzerland',
+  752: 'Sweden',
+  578: 'Norway',
+  208: 'Denmark',
+  56: 'Belgium',
+  40: 'Austria',
+  620: 'Portugal',
+  300: 'Greece',
+  616: 'Poland',
 };
 
 const getCountryName = (code: number): string => {
