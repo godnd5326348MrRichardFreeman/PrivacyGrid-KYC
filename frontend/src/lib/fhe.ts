@@ -33,7 +33,12 @@ export const initializeFHE = async (provider?: any) => {
     }
 
     const ethereumProvider =
-        provider || window.ethereum || window.okxwallet?.provider || window.okxwallet;
+        provider ||
+        window.ethereum ||
+        window.okxwallet?.provider ||
+        window.okxwallet ||
+        window.coinbaseWalletExtension ||
+        window.trustwallet;
     if (!ethereumProvider) {
         throw new Error("No wallet provider detected. Connect a wallet first.");
     }
