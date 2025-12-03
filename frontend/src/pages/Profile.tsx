@@ -54,6 +54,12 @@ const COUNTRY_CODES: Record<number, string> = {
   620: 'Portugal',
   300: 'Greece',
   616: 'Poland',
+  702: 'Singapore',
+  458: 'Malaysia',
+  764: 'Thailand',
+  360: 'Indonesia',
+  608: 'Philippines',
+  704: 'Vietnam',
 };
 
 const getCountryName = (code: number): string => {
