@@ -8,6 +8,8 @@ declare global {
         relayerSDK?: any;
         ethereum?: any;
         okxwallet?: any;
+        coinbaseWalletExtension?: any;
+        trustwallet?: any;
     }
 }
 
