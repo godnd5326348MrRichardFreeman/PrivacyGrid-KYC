@@ -21,7 +21,7 @@ export const Header = () => {
           </Link>
 
           {/* Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8" aria-label="Main navigation">
             {isHomePage ? (
               <>
                 <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
