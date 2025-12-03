@@ -51,8 +51,8 @@ export const Header = () => {
             )}
           </nav>
 
-          {/* Connect Button */}
-          <div className="flex items-center gap-4">
+          {/* Connect Button and Profile */}
+          <div className="flex items-center gap-4" role="group" aria-label="User actions">
             {isConnected && (
               <Link
                 to="/profile"
