@@ -60,6 +60,11 @@ const COUNTRY_CODES: Record<number, string> = {
   360: 'Indonesia',
   608: 'Philippines',
   704: 'Vietnam',
+  784: 'United Arab Emirates',
+  682: 'Saudi Arabia',
+  818: 'Egypt',
+  566: 'Nigeria',
+  710: 'South Africa',
 };
 
 const getCountryName = (code: number): string => {
