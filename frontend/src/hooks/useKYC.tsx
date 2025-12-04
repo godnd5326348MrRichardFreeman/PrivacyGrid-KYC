@@ -27,15 +27,17 @@ const TxToast = ({ message, hash }: { message: string; hash: string }) => (
 async function getEthersProvider(walletClient: any): Promise<{ provider: BrowserProvider; signer: JsonRpcSigner }> {
   // Get the underlying provider from the wallet client
   const { account, chain, transport } = walletClient;
+  console.log('[KYC] Initializing provider for chain:', chain.name, 'chainId:', chain.id);
 
   // Create a provider from the transport
-  // For EIP-1193 compatible wallets (MetaMask, OKX, etc.)
+  // For EIP-1193 compatible wallets (MetaMask, OKX, Coinbase, Trust, etc.)
   const provider = new BrowserProvider(transport, {
     chainId: chain.id,
     name: chain.name,
   });
 
   const signer = await provider.getSigner(account.address);
+  console.log('[KYC] Signer initialized for address:', account.address);
 
   return { provider, signer };
 }
