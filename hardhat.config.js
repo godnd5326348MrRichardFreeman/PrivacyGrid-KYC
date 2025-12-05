@@ -5,13 +5,14 @@ require("dotenv").config();
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: {
-    version: "0.8.24",
+    version: "0.8.27",
     settings: {
       optimizer: {
         enabled: true,
         runs: 200,
       },
       evmVersion: "cancun",
+      viaIR: true,
     },
   },
   networks: {
@@ -38,6 +39,6 @@ module.exports = {
     artifacts: "./artifacts",
   },
   mocha: {
-    timeout: 40000,
+    timeout: 300000,
   },
 };

@@ -120,4 +120,4 @@ export const CODED_COMPLIANCE_ABI = [
 ] as const;
 
 // CodedComplianceGrid 合约地址 (Sepolia)
-export const CONTRACT_ADDRESS = "0x889Ef1BDe022A309606012f721A76801Eb973001";
+export const CONTRACT_ADDRESS = "0x39b22fe394eaf8ded37ec288e92814F692Df067d";

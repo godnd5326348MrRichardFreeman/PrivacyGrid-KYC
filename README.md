@@ -1,304 +1,522 @@
 # PrivacyGrid KYC
 
-> **Privacy-Preserving Identity Verification powered by Zama FHE Technology**
-
-PrivacyGrid KYC is an innovative blockchain-based identity verification platform that leverages Fully Homomorphic Encryption (FHE) to enable privacy-preserving KYC processes. Built on Zama's fhEVM technology, the platform allows sensitive user data to remain encrypted throughout the entire verification lifecycle - from submission to storage and computation on-chain.
-
-The platform addresses a critical challenge in decentralized identity systems: how to verify user credentials without exposing personal information to validators, smart contracts, or even the blockchain itself. By utilizing FHE, PrivacyGrid KYC enables computations on encrypted data, ensuring that sensitive information such as country codes and birth years never exist in plaintext on-chain.
+> **Privacy-Preserving Identity Verification Protocol powered by Zama fhEVM**
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://privacygrid-kyc.vercel.app)
+[![Solidity](https://img.shields.io/badge/Solidity-0.8.27-363636)](https://soliditylang.org/)
+[![fhEVM](https://img.shields.io/badge/fhEVM-0.9.1-blue)](https://docs.zama.ai/fhevm)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Sepolia](https://img.shields.io/badge/network-sepolia-orange)](https://sepolia.etherscan.io/)
+[![Sepolia](https://img.shields.io/badge/network-Sepolia-orange)](https://sepolia.etherscan.io/address/0x39b22fe394eaf8ded37ec288e92814F692Df067d)
 
-## 🎯 Project Status: Demo & Educational Purpose
+## Overview
 
-**⚠️ IMPORTANT NOTICE**
+PrivacyGrid KYC is a next-generation decentralized identity verification protocol that leverages **Fully Homomorphic Encryption (FHE)** to enable privacy-preserving KYC processes on-chain. Built on Zama's fhEVM v0.9.1, the platform ensures sensitive user data remains encrypted throughout the entire verification lifecycle—from client-side encryption to on-chain storage and computation.
 
-This project is currently in the **demonstration phase** and serves as an **educational showcase** of Zama's FHE technology applied to identity verification scenarios.
+### The Privacy Challenge
 
-### Current Limitations
+Traditional KYC systems require users to expose sensitive personal information to validators, centralized databases, and smart contracts. This creates significant privacy risks:
 
-- **No Real Identity Verification**: This platform does NOT perform actual identity verification or KYC compliance checks
-- **Functional Validation Only**: The system demonstrates FHE encryption capabilities without validating the authenticity of submitted information
-- **Legal & Compliance Constraints**: Due to regional regulatory requirements and legal compliance considerations, real identity verification features are not implemented
-- **Development Scope**: Limited by development timeline and resource constraints for this demonstration phase
+- **Data Exposure**: Personal data visible to validators and contract administrators
+- **On-chain Transparency**: Blockchain's inherent transparency conflicts with privacy requirements
+- **Centralization Risk**: Aggregated PII becomes high-value attack targets
 
-### Future Roadmap
+### The FHE Solution
 
-The next phases of development will consider:
-- Integration with real identity verification services
-- Compliance with regional KYC/AML regulations (GDPR, CCPA, etc.)
-- Enhanced data collection and verification workflows
-- Partnership with licensed identity verification providers
-- Security audits and penetration testing
+PrivacyGrid KYC solves this by utilizing **Fully Homomorphic Encryption**, allowing:
 
-**Use this project for educational purposes, technical demonstrations, and understanding FHE technology applications only.**
+- **Encrypted Computation**: Operations performed directly on encrypted data
+- **Zero Knowledge Storage**: Sensitive fields never exist in plaintext on-chain
+- **Granular Access Control**: Cryptographic permissions determine who can decrypt
+- **Verifiable Compliance**: Prove regulatory compliance without data exposure
 
 ---
 
-## 🌟 Features
-
-- **🔐 FHE Encryption**: Country code and birth year encrypted using Zama's fully homomorphic encryption
-- **⚡ Web3 Integration**: Seamless wallet connection via RainbowKit
-- **🎨 Modern UI**: Clean, responsive interface built with React + TypeScript + Tailwind CSS
-- **📱 Mobile-Friendly**: Fully responsive design for all devices
-- **🔗 On-Chain Storage**: Encrypted data stored on Sepolia testnet
-- **🎥 Video Demo**: Interactive demonstration walkthrough
-
-## 🏗️ Architecture
+## Technical Architecture
 
 ```
-┌─────────────────┐
-│   React Frontend│
-│   (Vite + TS)   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐      ┌──────────────────┐
-│  FHE Encryption │◄────►│  Zama fhEVM SDK  │
-│  (Client-side)  │      │  (v0.2.0)        │
-└────────┬────────┘      └──────────────────┘
-         │
-         ▼
-┌─────────────────┐      ┌──────────────────┐
-│ Smart Contract  │◄────►│  Sepolia Testnet │
-│ (Solidity 0.8.24)│      │  (Ethereum)      │
-└─────────────────┘      └──────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                              CLIENT LAYER                                     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐          │
+│  │  React 18 + TS  │───►│  Zama Relayer   │───►│  Wallet Provider │          │
+│  │  (Vite 5.4)     │    │  SDK 0.3.0-5    │    │  (RainbowKit)    │          │
+│  └─────────────────┘    └────────┬────────┘    └─────────────────┘          │
+│                                  │                                           │
+│                    ┌─────────────▼─────────────┐                            │
+│                    │   FHE Input Encryption    │                            │
+│                    │   - createEncryptedInput  │                            │
+│                    │   - add32() for euint32   │                            │
+│                    │   - encrypt() → handles   │                            │
+│                    └─────────────┬─────────────┘                            │
+└──────────────────────────────────┼──────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                           BLOCKCHAIN LAYER                                    │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  ┌───────────────────────────────────────────────────────────────────┐      │
+│  │                    CodedComplianceGrid.sol                         │      │
+│  │                    (Solidity 0.8.27 + fhEVM 0.9.1)                │      │
+│  ├───────────────────────────────────────────────────────────────────┤      │
+│  │  Storage:                                                          │      │
+│  │  ├─ mapping(address => ComplianceRecord) complianceData           │      │
+│  │  │    ├─ documentReference: string                                │      │
+│  │  │    ├─ fullName: string                                         │      │
+│  │  │    ├─ countryCode: euint32  ◄── FHE Encrypted                 │      │
+│  │  │    ├─ yearOfBirth: euint32  ◄── FHE Encrypted                 │      │
+│  │  │    ├─ currentState: VerificationState                          │      │
+│  │  │    └─ submissionTime: uint256                                  │      │
+│  │  └─ address[] participantRegistry                                 │      │
+│  ├───────────────────────────────────────────────────────────────────┤      │
+│  │  FHE Operations:                                                   │      │
+│  │  ├─ FHE.fromExternal() → Convert encrypted input to euint32      │      │
+│  │  ├─ FHE.allowThis()    → Grant contract read permission          │      │
+│  │  └─ FHE.allow()        → Grant user/admin read permission        │      │
+│  └───────────────────────────────────────────────────────────────────┘      │
+│                                   │                                          │
+│  ┌────────────────────────────────▼──────────────────────────────────┐      │
+│  │                    Zama Gateway / KMS                              │      │
+│  │  - Threshold decryption network                                    │      │
+│  │  - Access Control List (ACL) management                           │      │
+│  │  - Cryptographic key management                                    │      │
+│  └───────────────────────────────────────────────────────────────────┘      │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
+---
 
-### Prerequisites
+## Smart Contract Specification
 
-- Node.js 18+ and npm
-- MetaMask or compatible Web3 wallet
-- Sepolia testnet ETH (for transactions)
+### Contract: `CodedComplianceGrid.sol`
 
-### Installation
+**Deployed Address (Sepolia)**: [`0x39b22fe394eaf8ded37ec288e92814F692Df067d`](https://sepolia.etherscan.io/address/0x39b22fe394eaf8ded37ec288e92814F692Df067d)
 
-1. **Clone the repository**
-```bash
-git clone https://github.com/godnd5326348MrRichardFreeman/PrivacyGrid-KYC.git
-cd PrivacyGrid-KYC
-```
-
-2. **Install dependencies**
-```bash
-# Install root dependencies (Hardhat)
-npm install
-
-# Install frontend dependencies
-cd frontend
-npm install
-```
-
-3. **Configure environment**
-```bash
-# Create .env file in root directory
-cp .env.example .env
-
-# Add your configuration
-SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
-PRIVATE_KEY=your_private_key_here
-ETHERSCAN_API_KEY=your_etherscan_api_key
-```
-
-4. **Run development server**
-```bash
-# From root directory
-npm run dev
-
-# Or from frontend directory
-cd frontend
-npm run dev
-```
-
-Visit `http://localhost:5173` to see the application.
-
-## 📁 Project Structure
-
-```
-PrivacyGrid-KYC/
-├── contracts/                    # Solidity smart contracts
-│   └── CodedComplianceGrid.sol  # Main KYC contract with FHE
-├── scripts/                      # Deployment scripts
-│   └── deploy.js                # Contract deployment script
-├── frontend/                     # React application
-│   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── hooks/               # Custom hooks (useKYC)
-│   │   ├── lib/                 # Utilities (FHE, contracts)
-│   │   └── config/              # Configuration (wagmi, etc.)
-│   └── public/
-│       ├── demo-video.mp4       # Demo walkthrough video
-│       └── *.wasm               # FHE SDK files
-├── hardhat.config.js            # Hardhat configuration
-└── package.json                 # Project dependencies
-```
-
-## 🔧 Smart Contract
-
-### Deployment
-
-The contract is deployed on Sepolia testnet:
-
-**Contract Address**: `0x889Ef1BDe022A309606012f721A76801Eb973001`
-
-[View on Sepolia Etherscan](https://sepolia.etherscan.io/address/0x889Ef1BDe022A309606012f721A76801Eb973001)
-
-### Key Functions
+#### Inheritance
 
 ```solidity
-// Submit KYC data (encrypted)
+contract CodedComplianceGrid is ZamaEthereumConfig
+```
+
+The contract inherits from `ZamaEthereumConfig` which provides:
+- Pre-configured FHE library addresses
+- Gateway/KMS integration for Ethereum Sepolia
+- Standardized ACL management
+
+#### Data Structures
+
+```solidity
+enum VerificationState {
+    Unverified,  // 0 - Initial state after registration
+    Approved,    // 1 - Administrator approved
+    Declined     // 2 - Administrator rejected
+}
+
+struct ComplianceRecord {
+    string documentReference;      // Document ID (plaintext)
+    string fullName;              // User name (plaintext)
+    euint32 countryCode;          // ISO 3166-1 numeric (FHE encrypted)
+    euint32 yearOfBirth;          // Birth year (FHE encrypted)
+    VerificationState currentState;
+    uint256 submissionTime;
+    bool isActive;
+}
+```
+
+#### Core Functions
+
+| Function | Access | Description |
+|----------|--------|-------------|
+| `registerCompliance()` | Public | Submit encrypted KYC data |
+| `approveRecord()` | Admin | Approve a pending record |
+| `declineRecord()` | Admin | Decline a pending record |
+| `queryRecordState()` | Public | Get verification status |
+| `checkApprovalStatus()` | Public | Boolean approval check |
+| `retrieveFullRecord()` | Public | Get complete record with encrypted handles |
+| `countUnverifiedRecords()` | Admin | Count pending verifications |
+| `fetchAllParticipants()` | Admin | List all registered addresses |
+| `updateAdministrator()` | Admin | Transfer admin privileges |
+
+#### FHE Integration Details
+
+```solidity
 function registerCompliance(
     string calldata _documentReference,
     string calldata _fullName,
-    externalEuint32 _countryCode,      // FHE encrypted
-    externalEuint32 _yearOfBirth,      // FHE encrypted
-    bytes calldata validationProof
-) external
+    externalEuint32 _countryCode,    // Encrypted handle from client
+    externalEuint32 _yearOfBirth,    // Encrypted handle from client
+    bytes calldata validationProof    // ZK proof for both values
+) external {
+    // Convert external encrypted inputs to internal euint32
+    euint32 encryptedCountry = FHE.fromExternal(_countryCode, validationProof);
+    euint32 encryptedYear = FHE.fromExternal(_yearOfBirth, validationProof);
 
-// Check verification status
-function queryRecordState(address participant)
-    external view returns (VerificationState, uint256)
+    // Store encrypted values
+    complianceData[msg.sender] = ComplianceRecord({
+        countryCode: encryptedCountry,
+        yearOfBirth: encryptedYear,
+        // ...
+    });
 
-// Administrator functions
-function approveRecord(address participant) external
-function declineRecord(address participant) external
+    // Set FHE Access Control
+    FHE.allowThis(encryptedCountry);          // Contract can read
+    FHE.allow(encryptedCountry, administrator); // Admin can decrypt
+    FHE.allow(encryptedCountry, msg.sender);    // User can decrypt own data
+}
 ```
 
-## 🛠️ Technology Stack
-
-### Frontend
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite 5
-- **Styling**: Tailwind CSS + shadcn/ui
-- **Web3**:
-  - wagmi v2 (React hooks for Ethereum)
-  - RainbowKit (wallet connection)
-  - ethers.js v6 (blockchain interaction)
-- **FHE**: @zama-fhe/relayer-sdk v0.2.0
-
-### Smart Contracts
-- **Language**: Solidity 0.8.24
-- **Framework**: Hardhat 2.22
-- **FHE Library**: @fhevm/solidity v0.8.0
-- **Network**: Sepolia Testnet
-
-### Deployment
-- **Frontend**: Vercel
-- **Blockchain**: Sepolia Ethereum Testnet
-
-## 🔐 FHE Implementation
-
-This project demonstrates Zama's Fully Homomorphic Encryption for privacy-preserving data storage:
-
-### Client-Side Encryption
-
-```typescript
-// Encrypt multiple values with shared proof
-const encrypted = await encryptMultipleUint32(
-  [countryCode, birthYear],
-  contractAddress,
-  userAddress
-);
-
-// Submit to blockchain
-await contract.registerCompliance(
-  documentHash,
-  fullName,
-  encrypted.handles[0],  // Encrypted country code
-  encrypted.handles[1],  // Encrypted birth year
-  encrypted.signature    // Shared proof
-);
-```
-
-### Smart Contract Processing
+#### Events
 
 ```solidity
-// Import encrypted data
-euint32 encryptedCountry = FHE.fromExternal(_countryCode, validationProof);
-euint32 encryptedYear = FHE.fromExternal(_yearOfBirth, validationProof);
-
-// Set access control
-FHE.allowThis(encryptedCountry);
-FHE.allow(encryptedCountry, administrator);
-FHE.allow(encryptedCountry, msg.sender);
+event ComplianceRecordCreated(address indexed participant, uint256 timestamp);
+event StateTransition(address indexed participant, VerificationState previousState, VerificationState updatedState);
+event AdministratorChanged(address indexed formerAdmin, address indexed currentAdmin);
 ```
-
-## 📖 Usage Guide
-
-1. **Connect Wallet**: Click "Connect Wallet" and select your Web3 wallet
-2. **Start KYC**: Click "Start KYC Verification" button
-3. **Enter Data**: Fill in demonstration data:
-   - Full Name (stored as plain text)
-   - Country (encrypted with FHE)
-   - Birth Year (encrypted with FHE)
-4. **Submit**: Click "Submit KYC" to encrypt and store data on-chain
-5. **Confirmation**: Wait for transaction confirmation on Sepolia
-
-## 🎥 Demo Video
-
-A complete walkthrough video is available on the website's "How It Works" section, demonstrating:
-- Wallet connection process
-- KYC form submission
-- FHE encryption in action
-- On-chain transaction confirmation
-
-## 🧪 Development Commands
-
-```bash
-# Compile smart contracts
-npm run compile
-
-# Deploy to Sepolia
-npm run deploy
-
-# Run tests
-npm run test
-
-# Start frontend dev server
-npm run dev
-
-# Build frontend for production
-cd frontend && npm run build
-
-# Verify contract on Etherscan
-npm run verify
-```
-
-## 🌐 Live Demo
-
-Visit the live demonstration: **[https://privacygrid-kyc.vercel.app](https://privacygrid-kyc.vercel.app)**
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## ⚠️ Disclaimer
-
-**FOR DEMONSTRATION AND EDUCATIONAL PURPOSES ONLY**
-
-This software is provided as a technical demonstration of FHE technology and should NOT be used for:
-- Real identity verification
-- Production KYC/AML compliance
-- Handling actual personal identifiable information (PII)
-- Regulatory compliance purposes
-
-Users and developers assume all responsibility for compliance with applicable laws and regulations in their jurisdiction.
-
-## 🙏 Acknowledgments
-
-- [Zama](https://www.zama.ai/) - For FHE technology and fhEVM
-- [RainbowKit](https://www.rainbowkit.com/) - For wallet connection UI
-- [shadcn/ui](https://ui.shadcn.com/) - For UI components
-
-## 📞 Contact
-
-- **Project**: PrivacyGrid KYC
-- **GitHub**: [https://github.com/godnd5326348MrRichardFreeman/PrivacyGrid-KYC](https://github.com/godnd5326348MrRichardFreeman/PrivacyGrid-KYC)
-- **Live Demo**: [https://privacygrid-kyc.vercel.app](https://privacygrid-kyc.vercel.app)
 
 ---
 
-**Built with ❤️ using Zama FHE Technology**
+## Dependency Versions
+
+### Smart Contract Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `@fhevm/solidity` | ^0.9.1 | FHE types and operations |
+| `@openzeppelin/contracts` | ^5.0.2 | Security utilities |
+| `hardhat` | ^2.26.3 | Development framework |
+| `@fhevm/hardhat-plugin` | 0.3.0-1 | FHE testing support |
+| `@fhevm/mock-utils` | 0.3.0-1 | Mock FHE for testing |
+| `@zama-fhe/relayer-sdk` | 0.3.0-5 | Client SDK integration |
+
+### Frontend Dependencies
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| `react` | ^18.3.1 | UI framework |
+| `vite` | ^5.4.19 | Build tool |
+| `typescript` | ^5.8.3 | Type safety |
+| `ethers` | ^6.15.0 | Ethereum interaction |
+| `wagmi` | ^2.18.1 | React hooks for Ethereum |
+| `viem` | ^2.38.3 | TypeScript Ethereum library |
+| `@rainbow-me/rainbowkit` | ^2.2.9 | Wallet connection UI |
+| `@tanstack/react-query` | ^5.90.5 | Async state management |
+| `tailwindcss` | ^3.4.17 | Styling |
+| `sonner` | ^1.7.4 | Toast notifications |
+
+### Compiler Configuration
+
+```javascript
+// hardhat.config.js
+solidity: {
+  version: "0.8.27",
+  settings: {
+    optimizer: {
+      enabled: true,
+      runs: 200,
+    },
+    evmVersion: "cancun",
+    viaIR: true,  // Required for FHE contracts
+  },
+}
+```
+
+---
+
+## Project Structure
+
+```
+PrivacyGridKYC/
+├── contracts/
+│   └── CodedComplianceGrid.sol    # Main FHE KYC contract
+├── scripts/
+│   └── deploy.js                   # Deployment script
+├── test/
+│   ├── CodedComplianceGrid.test.js # Core functionality tests
+│   ├── FHEOperations.test.js       # FHE-specific tests
+│   └── Integration.test.js         # End-to-end tests
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Header.tsx          # Navigation header
+│   │   │   ├── Hero.tsx            # Landing section
+│   │   │   ├── KYCForm.tsx         # KYC submission form
+│   │   │   ├── Features.tsx        # Feature showcase
+│   │   │   └── HowItWorks.tsx      # Tutorial section
+│   │   ├── hooks/
+│   │   │   └── useKYC.tsx          # KYC submission hook
+│   │   ├── lib/
+│   │   │   ├── fhe.ts              # FHE SDK wrapper
+│   │   │   ├── contractABI.ts      # Contract ABI & address
+│   │   │   └── utils.ts            # Utility functions
+│   │   └── config/
+│   │       └── wagmi.ts            # Wallet configuration
+│   ├── index.html                   # Entry HTML with FHE SDK
+│   └── package.json
+├── hardhat.config.js
+├── package.json
+└── README.md
+```
+
+---
+
+## FHE Implementation Guide
+
+### Client-Side Encryption Flow
+
+```typescript
+// frontend/src/lib/fhe.ts
+
+// 1. Initialize FHE SDK (loaded via CDN)
+export const initializeFHE = async (provider?: any) => {
+  const sdk = window.RelayerSDK;
+  const { initSDK, createInstance, SepoliaConfig } = sdk;
+
+  await initSDK();
+  const config = { ...SepoliaConfig, network: provider };
+  fheInstance = await createInstance(config);
+  return fheInstance;
+};
+
+// 2. Encrypt KYC Data
+export const encryptKYCData = async (
+  countryCode: number,
+  birthYear: number,
+  userAddress: Address
+) => {
+  const instance = await getInstance();
+  const input = instance.createEncryptedInput(CONTRACT_ADDRESS, userAddress);
+
+  // Add multiple euint32 values to single input
+  input.add32(countryCode);
+  input.add32(birthYear);
+
+  // Generate encrypted handles and proof
+  const { handles, inputProof } = await input.encrypt();
+
+  return {
+    countryHandle: bytesToHex(handles[0]),
+    birthYearHandle: bytesToHex(handles[1]),
+    proof: bytesToHex(inputProof),
+  };
+};
+```
+
+### Transaction Flow with Toast Notifications
+
+```typescript
+// frontend/src/hooks/useKYC.tsx
+
+const submitKYC = async (documentHash, fullName, countryCode, birthYear) => {
+  // Step 1: Initialize FHE
+  toast.info('Initializing encryption...');
+  await initializeFHE();
+
+  // Step 2: Encrypt sensitive data
+  toast.info('Encrypting sensitive data...');
+  const encrypted = await encryptKYCData(countryCode, birthYear, address);
+
+  // Step 3: Submit transaction
+  toast.info('Submitting KYC to blockchain...');
+  const tx = await contract.registerCompliance(
+    documentHash,
+    fullName,
+    encrypted.countryHandle,
+    encrypted.birthYearHandle,
+    encrypted.proof
+  );
+
+  // Step 4: Show pending with explorer link
+  toast.info(
+    <TxToast message="Waiting for confirmation..." hash={tx.hash} />,
+    { duration: 10000 }
+  );
+
+  // Step 5: Wait and show result
+  const receipt = await tx.wait();
+  if (receipt.status === 1) {
+    toast.success(<TxToast message="KYC submitted!" hash={tx.hash} />);
+  } else {
+    toast.error(<TxToast message="Transaction failed" hash={tx.hash} />);
+  }
+};
+```
+
+---
+
+## Testing
+
+### Test Suite Overview
+
+| Test File | Tests | Coverage |
+|-----------|-------|----------|
+| `CodedComplianceGrid.test.js` | 25 | Core functionality, access control, state transitions |
+| `FHEOperations.test.js` | 15 | FHE encryption, proofs, permissions |
+| `Integration.test.js` | 12 | End-to-end workflows, stress tests |
+
+### Running Tests
+
+```bash
+# Run all tests with FHE mock
+npx hardhat test
+
+# Run specific test file
+npx hardhat test test/CodedComplianceGrid.test.js
+
+# Run with gas reporting
+REPORT_GAS=true npx hardhat test
+
+# Run with coverage
+npx hardhat coverage
+```
+
+### Test Environment
+
+Tests run in FHEVM mock mode using `@fhevm/hardhat-plugin`:
+
+```javascript
+// Test setup
+beforeEach(async function () {
+  if (!fhevm.isMock) {
+    throw new Error("Tests require FHEVM mock environment");
+  }
+  await fhevm.initializeCLIApi();
+  // ...
+});
+
+// Create encrypted test inputs
+const encrypted = await fhevm
+  .createEncryptedInput(contractAddress, userAddress)
+  .add32(840n)  // Country code
+  .add32(1990n) // Birth year
+  .encrypt();
+```
+
+---
+
+## Deployment
+
+### Prerequisites
+
+```bash
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+```
+
+### Environment Variables
+
+```bash
+SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
+PRIVATE_KEY=0x...
+ETHERSCAN_API_KEY=...
+```
+
+### Deploy Contract
+
+```bash
+# Compile
+npx hardhat compile
+
+# Deploy to Sepolia
+npx hardhat run scripts/deploy.js --network sepolia
+
+# Verify on Etherscan
+npx hardhat verify --network sepolia <CONTRACT_ADDRESS>
+```
+
+### Deploy Frontend
+
+```bash
+cd frontend
+npm install
+npm run build
+
+# Deploy to Vercel
+vercel --prod
+```
+
+---
+
+## Security Considerations
+
+### FHE Security Model
+
+1. **Client-Side Encryption**: All sensitive data encrypted before transmission
+2. **On-Chain Privacy**: Encrypted values (`euint32`) never decrypted on-chain
+3. **Access Control**: Cryptographic ACL determines decryption permissions
+4. **Threshold Decryption**: Zama Gateway requires multi-party cooperation
+
+### Access Control
+
+| Role | Permissions |
+|------|-------------|
+| User | Register own data, view own encrypted record, decrypt own values |
+| Admin | Approve/decline records, view all participants, decrypt all records |
+| Contract | Read encrypted values for internal operations |
+
+### Best Practices Implemented
+
+- Input validation before FHE operations
+- Duplicate registration prevention
+- State transition constraints
+- Admin privilege restrictions
+- Event logging for auditability
+
+---
+
+## Limitations & Future Work
+
+### Current Limitations
+
+- **Demo Purpose**: No real identity verification performed
+- **Single Admin**: No multi-sig administrator support
+- **No Decryption UI**: Encrypted values viewable but not decryptable in UI
+- **Testnet Only**: Not audited for mainnet deployment
+
+### Planned Enhancements
+
+- [ ] Multi-signature administrator governance
+- [ ] Integration with identity verification oracles
+- [ ] Encrypted computation for age/region verification
+- [ ] Cross-chain identity portability
+- [ ] GDPR-compliant data deletion mechanisms
+
+---
+
+## Resources
+
+### Documentation
+
+- [Zama fhEVM Documentation](https://docs.zama.ai/fhevm)
+- [fhEVM 0.9.1 Migration Guide](https://docs.zama.ai/protocol/solidity-guides/development-guide/migration)
+- [Hardhat Documentation](https://hardhat.org/docs)
+
+### Related Projects
+
+- [Zama fhEVM](https://github.com/zama-ai/fhevm)
+- [fhevm-react-template](https://github.com/zama-ai/fhevm-react-template)
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Disclaimer
+
+**FOR DEMONSTRATION AND EDUCATIONAL PURPOSES ONLY**
+
+This software demonstrates FHE technology capabilities and should NOT be used for:
+- Production identity verification
+- Regulatory KYC/AML compliance
+- Processing real personal identifiable information (PII)
+
+Users assume all responsibility for compliance with applicable laws and regulations.
+
+---
+
+**Built with Zama FHE Technology**
+
